@@ -1,0 +1,30 @@
+<div style="padding: 20px;" class="row">
+    <h3>Personal Info</h3>
+</div>
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <div mat-dialog-content class="content">
+        <div class="row">
+            <mat-form-field appearance="outline">
+                <mat-label>Name</mat-label>
+                <input matInput class="form-control" formControlName="name">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput class="form-control" formControlName="email">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Mobile Phone</mat-label>
+                <input matInput class="form-control" formControlName="mobilePhone">
+            </mat-form-field>
+        </div>
+    </div>
+    <div>
+        @if(editingMode){
+            <button mat-raised-button type="button">Cancel</button>
+            <button mat-raised-button type="submit">Save</button>
+        }
+        @else{
+            <button mat-raised-button type="button" (click)="onChangeUserForm()">Change</button>
+        }
+    </div>
+</form>
