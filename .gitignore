@@ -1,0 +1,79 @@
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node.js dependencies
+clientApp/node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.editorconfig
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+clientApp/.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+clientApp/.history/*
+
+# Miscellaneous
+clientApp/.angular/
+clientApp/.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# System files
+.DS_Store
+Thumbs.db
+
+# .NET Core build and publish output
+bin/
+obj/
+publish/
+*.exe
+*.dll
+*.pdb
+*.log
+
+# Entity Framework migrations
+Migrations/
+
+# ASP.NET Core secrets
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+
+# User-specific files
+*.suo
+*.user
+*.vs/
+*.vscode/
+*.ncrunchproject
+
+# SQLite database
+*.db
+*.sqlite
+*.sqlite3
+
+# Lock files
+yarn.lock
+pnpm-lock.yaml
+package-lock.json
+
+# Assets
+clientApp/src/assets
+wwwroot/

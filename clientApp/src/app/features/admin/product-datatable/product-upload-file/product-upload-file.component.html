@@ -1,0 +1,10 @@
+<div mat-dialog-title style="display: flex; justify-content: center; padding: 10px;">
+    Upload Product File
+</div>
+<div mat-dialog-content class="content" style="display: flex; justify-content: center; padding: 5px;">
+    <input type="file" (change)="onChangeFile($event)">
+</div>
+<div mat-dialog-actions style="display: flex; justify-content: center; padding: 20px;">
+    <button mat-raised-button [mat-dialog-close]="false">Cancel</button>
+    <button mat-raised-button (click)="onUploadProductFile()">Upload</button>
+</div>

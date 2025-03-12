@@ -1,0 +1,22 @@
+<div class="mat-elevation-z8">
+    <mat-grid-list cols="5" rowHeight="1:2">
+        @for (product of products; track product)
+        {   
+            <mat-grid-tile [routerLink]="['/product', product.id]">
+                <mat-card class="product-card">
+                <img mat-card-image class="image" [src]="product.imageUrl || 'assets/img/no-image.jpg'" alt="Product Image" />
+                <mat-card-content>
+                    <h5>{{ product.title }}</h5>
+                    <p>{{ product.author }}</p>
+                    <p class="price">{{ product.price}}</p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button style="width: 10px;" mat-button>
+                        <mat-icon>shopping_cart</mat-icon>
+                    </button>
+                </mat-card-actions>
+                </mat-card>
+            </mat-grid-tile>
+        }
+    </mat-grid-list>
+  </div>

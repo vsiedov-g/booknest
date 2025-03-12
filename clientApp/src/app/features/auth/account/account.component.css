@@ -1,0 +1,28 @@
+
+.account-container {
+    height: 100vh;
+    display: flex;
+  }
+  
+  .sidenav {
+    width: 250px;
+    padding: 20px;
+    background: #f4f4f4;
+  }
+
+  
+  .sidenav button {
+    width: 100%;
+    margin: 10px 0;
+    text-align: left;
+  }
+  
+  .active:focus {
+    font-weight: bold;
+    background-color: #ddd;
+  }
+  
+  .content {
+    flex: 1;
+    padding: 20px;
+  }

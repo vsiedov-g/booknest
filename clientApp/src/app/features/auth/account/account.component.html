@@ -1,0 +1,16 @@
+<mat-sidenav-container class="account-container">
+    <mat-sidenav mode="side" opened class="sidenav">
+      <button mat-button (click)="onToggleProfileInfo()" class="active">Personal Info</button>
+      <button mat-button (click)="onTogglePurchasedProducts()" class="active">Purchased Products</button>
+    </mat-sidenav>
+  
+    <mat-sidenav-content class="content">
+        @if(isPersonalInfo){
+            <app-user-info [user]="user"></app-user-info>
+        }
+        @else{
+            <app-user-products></app-user-products>
+        }
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  

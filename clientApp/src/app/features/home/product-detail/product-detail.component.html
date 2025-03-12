@@ -1,0 +1,21 @@
+<mat-card class="product-detail-card">
+    <mat-card-header>
+      <mat-card-title>{{ product.title }}</mat-card-title>
+      <mat-card-subtitle>{{ product.categories }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="product-detail-container">
+        <div class="product-image">
+            <img mat-card-image src="assets/img/no-image.jpg" alt="Product Image" />
+        </div>
+        <div class="product-info">
+          <p><strong>Description:</strong> {{ product.description }}</p>
+          <p><strong>Price:</strong> {{ product.price }}</p>
+          <p><strong>Author:</strong> {{ product.author }}</p>
+        </div>
+        <div class="action-button">
+          <button mat-raised-button color="primary">Buy Now</button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>

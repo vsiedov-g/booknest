@@ -1,0 +1,73 @@
+<div mat-dialog-title>
+    Product Form
+</div>
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    <div mat-dialog-content class="content">
+        <div class="row" style="display: flex; gap: 20px;">
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                <img class="image" [src]="imageUrl" alt="image" style="width: 195px; height: 259px; border-radius: 5px;">
+                <input type="file" (change)="onUploadImage($event)">
+            </div>
+
+            <div style="flex: 2; display: flex; flex-direction: column;">
+                <mat-form-field appearance="outline">
+                    <mat-label>Id</mat-label>
+                    <input matInput class="form-control" formControlName="id">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Title</mat-label>
+                    <input matInput class="form-control" formControlName="title">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput class="form-control" formControlName="description"></textarea>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Author</mat-label>
+                    <input 
+                    matInput
+                    (input)="onFetchAuthors($event)"
+                    class="form-control" 
+                    formControlName="author" 
+                    [matAutocomplete]="authorAuto">
+                    <mat-autocomplete  #authorAuto="matAutocomplete">
+                        @for (author of authorsFromDb; track author) {
+                          <mat-option [value]="author.name">{{author.name}}</mat-option>
+                        }
+                      </mat-autocomplete>
+                </mat-form-field>
+                <mat-label>Categories</mat-label>
+                <mat-chip-grid #chipGrid aria-label="Category selection">
+                    @for (category of categories.controls; track category.value; let id = $index) {
+                    <mat-chip-row (removed)="onRemoveCategory(id)">
+                    {{category.value}}
+                    <button matChipRemove [attr.aria-label]="'remove ' + category">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                    </mat-chip-row>
+                }
+                </mat-chip-grid>
+                <input
+                matInput
+                (input)="onFetchCategories($event)"
+                #categoryInput 
+                [matChipInputFor]="chipGrid"
+                [matAutocomplete]="categoryAuto"
+                />
+                <mat-autocomplete (optionSelected)="onAddCategory($event); categoryInput.value = ''" #categoryAuto="matAutocomplete">
+                    @for (category of categoriesFromDb; track category) {
+                      <mat-option [value]="category.name" >{{category.name}}</mat-option>
+                    }
+                  </mat-autocomplete>
+                <mat-form-field appearance="outline">
+                    <mat-label>Price</mat-label>
+                    <input matInput class="form-control" formControlName="price">
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-raised-button [mat-dialog-close]="false">Cancel</button>
+        <button mat-raised-button type="submit">Save</button>
+    </div>
+</form>

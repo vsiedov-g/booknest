@@ -1,0 +1,21 @@
+<div mat-dialog-title>
+    Author Form
+</div>
+<form [formGroup]="authorForm" (ngSubmit)="onSubmit()">
+    <div mat-dialog-content class="content">
+        <div class="row">
+            <mat-form-field appearance="outline">
+                <mat-label>Id</mat-label>
+                <input matInput class="form-control" formControlName="id">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Name</mat-label>
+                <input matInput class="form-control" formControlName="name">
+            </mat-form-field>
+        </div>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-raised-button [mat-dialog-close]="false">Cancel</button>
+        <button mat-raised-button type="submit">Save</button>
+    </div>
+</form>

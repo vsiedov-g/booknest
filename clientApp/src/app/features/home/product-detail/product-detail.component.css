@@ -1,0 +1,35 @@
+.product-detail-card {
+    max-width: 800px;
+    margin: 20px auto;
+  }
+  
+  .product-detail-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .product-image {
+    flex: 1;
+    max-width: 300px;
+    padding-right: 20px;
+  }
+  
+  .product-image img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+  
+  .product-info {
+    flex: 2;
+    max-width: 500px;
+  }
+  
+  .action-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
