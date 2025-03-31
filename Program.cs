@@ -18,7 +18,7 @@ var CORSConfiguration = "AllowAll";
 // Add services to the container.
 builder.Services.AddCors(options => 
     options.AddPolicy(name: "AllowAll", policy => 
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(config["Origins"]!)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
