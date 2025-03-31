@@ -54,8 +54,11 @@ Migrations/
 
 # ASP.NET Core secrets
 appsettings.Development.json
-appsettings.Local.json
+appsettings.json
 appsettings.Production.json
+
+# Angular secrets
+clientApp/src/environments
 
 # User-specific files
 *.suo
