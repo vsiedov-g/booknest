@@ -42,6 +42,8 @@ export class UserDatatableComponent implements AfterViewInit, OnInit {
   changeRole(id: number,role: string){
     let user = this.dataSource.data.find(i => i.id == id);
     user.role = role;
-    this.userService.update(user);
+    this.userService.update(user).subscribe({next: res => {
+      console.log(res);
+    }});
   }
 }
