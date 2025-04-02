@@ -12,6 +12,7 @@ namespace booknest.Repository.IRepository
         IRepository<Category> Category {get;}
         IRepository<Publisher> Publisher {get;}
         IRepository<RefreshToken> RefreshToken {get;}
+        IRepository<Order> Order {get;}
         void Save();
     }
 }

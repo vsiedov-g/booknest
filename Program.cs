@@ -42,6 +42,11 @@ builder.Services.AddAuthentication(options => {
     };
 });
 builder.Services.AddHttpLogging(o => { });
+builder.Services.AddHttpClient("monobank", (ServiceProvider, httpClient) => 
+{
+    httpClient.DefaultRequestHeaders.Add("X-Token", config["Monobank:Token"]);
+    httpClient.BaseAddress = new Uri("https://api.monobank.ua");
+});
 builder.Services.AddAuthorization();
 builder.Services.AddControllers().AddJsonOptions(options => {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -50,13 +55,14 @@ builder.Services.AddControllers().AddJsonOptions(options => {
     });
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 //Repositories
-// builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 //Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo

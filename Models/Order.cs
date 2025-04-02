@@ -7,13 +7,18 @@ namespace booknest.Models
     public class Order
     {
         public int Id { get; set; }
-        public int CustomerId { get; set; }
-        [ForeignKey("CustomerId")]
+        public int UserId { get; set; }
+        [ForeignKey("UserId")]
         [ValidateNever]
         public User User { get; set; }
-        public ICollection<Product> Products { get; set; }
-        public double TotalPrice { get; set; }
-        public DateTime date { get; set; }
-        public string State { get; set; }
+        public int ProductId { get; set; }
+        [ForeignKey("ProductId")]
+        [ValidateNever]
+        public Product Product { get; set; }
+        public double Price { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
+        public string Status { get; set; }
+        public string? InvoiceId { get; set; }
     }
 }
