@@ -23,7 +23,6 @@ export class AccountComponent {
       next: (data) =>
       {
         this.user = data['user'];
-        console.log(this.user);
       }
     })
   }

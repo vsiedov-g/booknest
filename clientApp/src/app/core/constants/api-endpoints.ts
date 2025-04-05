@@ -34,6 +34,7 @@ export const API_ENDPOINTS = {
         UPDATE: `${apiBaseUrl}/Product/update`,
         DELETE: `${apiBaseUrl}/Product/delete`,
         UPLOAD_FILE: `${apiBaseUrl}/Product/uploadFile`,
-        
+        DOWNLOAD_FILE:  `${apiBaseUrl}/Product/downloadFile`,
+        CREATE_PAYMENT: `${apiBaseUrl}/Product/purchase`,
     },
 }

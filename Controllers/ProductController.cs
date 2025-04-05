@@ -58,8 +58,18 @@ namespace booknest.Controllers
         }
 
         [HttpGet("getAll")]
-        public IActionResult GetAll()
+        public IActionResult GetAll(int? userId)
         {
+            if(userId != null)
+            {
+                var user = _unitOfWork.User.Get(u => u.Id == userId, includeProperties: "Products");
+                if(user == null)
+                {
+                    return NotFound("User is not found");
+                }
+                var mappedUserProducts = _mapper.Map<List<ProductDto>>(user.Products);
+                return Ok(mappedUserProducts);
+            }
             var products = _unitOfWork.Product.GetAll(includeProperties: "Categories,Author");
             var mappedProducts = _mapper.Map<List<ProductDto>>(products);
             return Ok(mappedProducts);
@@ -155,7 +165,7 @@ namespace booknest.Controllers
             var product = _unitOfWork.Product.Get(p => p.Id == productId);
             if(product == null)
             {
-                return NotFound();
+                return NotFound("Product not found");
             }
             if(product.FilePath == null)
             {
@@ -174,7 +184,7 @@ namespace booknest.Controllers
 
         [Authorize]
         [HttpPost("purchase")]
-        public async Task<IActionResult> CreatePayment([FromBody]int productId)
+        public async Task<IActionResult> CreatePayment(int productId, [FromForm] string redirectUrl)
         {
             if(!ModelState.IsValid)
             {
@@ -184,21 +194,22 @@ namespace booknest.Controllers
             User user = _unitOfWork.User.Get(u => u.Id.ToString() == userId, includeProperties: "Products");
             if(user == null)
             {
-                throw new ArgumentException("User is not found");
+                return NotFound("User is not found");
             }
             Product product = _unitOfWork.Product.Get(p => p.Id == productId);
             if(product == null)
             {
-                throw new ArgumentException("Product is not found");
+                return NotFound("Product is not found");
             }
             if(user.Products.Any(p => p.Id == product.Id))
             {
-                throw new ArgumentException("User already purchased the product");
+                return BadRequest("User already purchased the product");
             }
 
             var data = new {
                 amount = product.Price * 100,
                 ccy = 980, 
+                redirectUrl = redirectUrl,
                 webHookUrl = $"{_config["NgrokUrl"]}/api/Product/callback"
             };
 
@@ -222,7 +233,7 @@ namespace booknest.Controllers
 
                 _unitOfWork.Order.Add(order);
                 _unitOfWork.Save();
-                return Ok(content);
+                return Ok(new {pageUrl = content.pageUrl});
             }else 
             {
                 return BadRequest("Something went wrong");

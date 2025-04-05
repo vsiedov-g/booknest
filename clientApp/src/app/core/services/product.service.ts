@@ -13,8 +13,12 @@ export class ProductService {
     getAll(isAdmin: boolean){
         return this.http.get<Product[]>(API_ENDPOINTS.PRODUCT.GET_ALL).pipe(tap({next: res => this.storageProducts(res, isAdmin)}));
     }
+    getUserProducts(userId: number)
+    {
+        return this.http.get<Product[]>(API_ENDPOINTS.PRODUCT.GET_ALL, {params: new HttpParams().set('userId', userId)});
+    }
     getById(productId: number){
-        return this.http.get<Product>(API_ENDPOINTS.PRODUCT.GET_BY_ID, {params: new HttpParams().set('productId', productId) });
+        return this.http.get<Product>(API_ENDPOINTS.PRODUCT.GET_BY_ID, {params: new HttpParams().set('productId', productId)});
     }
     add(product: Product, imageFile?: File)
     {
@@ -53,6 +57,17 @@ export class ProductService {
     {
         var formData = new FormData();
         formData.append('file', file, file.name);
-        return this.http.put<string>(API_ENDPOINTS.PRODUCT.UPLOAD_FILE, formData, {params: new HttpParams().set('productId', productId)})
+        return this.http.put<string>(API_ENDPOINTS.PRODUCT.UPLOAD_FILE, formData, {params: new HttpParams().set('productId', productId)});
+    }
+    dowloadProductFile(productId: number)
+    {
+        return this.http.get(API_ENDPOINTS.PRODUCT.DOWNLOAD_FILE,  {params: new HttpParams().set('productId', productId), responseType: 'blob'}, );
+    }
+    createPayment(productId: number)
+    {
+        const redirectUrl = window.location.origin + '/home';
+        var formData = new FormData();
+        formData.append('redirectUrl', redirectUrl);
+        return this.http.post<{pageUrl: string}>(API_ENDPOINTS.PRODUCT.CREATE_PAYMENT, formData, {params: new HttpParams().set('productId', productId)});
     }
 }
