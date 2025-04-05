@@ -70,15 +70,15 @@ namespace booknest.Service
 
             return refreshToken;
         }
-        public void SaveRefreshTokenToDB(RefreshToken refreshToken)
+        public async Task SaveRefreshTokenToDBAsync(RefreshToken refreshToken)
         {
             _unitOfWork.RefreshToken.Add(refreshToken);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
         }
 
-        public bool ValidateRefreshToken(string token, int userId)
+        public async Task<bool> ValidateRefreshTokenAsync(string token, int userId)
         {
-            RefreshToken refreshToken = _unitOfWork.RefreshToken.Get(r => r.UserId == userId && !r.Revoked);
+            RefreshToken refreshToken = await _unitOfWork.RefreshToken.GetAsync(r => r.UserId == userId && !r.Revoked);
             if (refreshToken == null)
             {
                 return false;
@@ -90,14 +90,14 @@ namespace booknest.Service
             return true;
         }
 
-        public void RevokeRefreshToken(int userId)
+        public async Task RevokeRefreshTokenAsync(int userId)
         {
-            RefreshToken refreshToken = _unitOfWork.RefreshToken.Get(r => r.UserId == userId && !r.Revoked);
+            RefreshToken refreshToken = await _unitOfWork.RefreshToken.GetAsync(r => r.UserId == userId && !r.Revoked);
             if (refreshToken != null)
             {
                 refreshToken.Revoked = true;
                 _unitOfWork.RefreshToken.Update(refreshToken);
-                _unitOfWork.Save();
+                await _unitOfWork.SaveAsync();
             }
         }
     }

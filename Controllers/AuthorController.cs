@@ -19,30 +19,22 @@ namespace booknest.Controllers
 
         [Authorize]
         [HttpGet("getAll")]
-        public IActionResult GetAll([FromQuery]string? authorName)
+        public async Task<IActionResult> GetAll([FromQuery]string? authorName)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             if(authorName != null)
             {
-                var authors = _unitOfWork.Author.GetAll(a => a.Name.Contains(authorName));
+                var authors = await _unitOfWork.Author.GetAllAsync(a => a.Name.ToLower().Contains(authorName.ToLower()));
                 return Ok(authors);
             }
-            var allAuthors = _unitOfWork.Author.GetAll();
+            var allAuthors = await _unitOfWork.Author.GetAllAsync();
             return Ok(allAuthors);
         }
 
         [Authorize]
         [HttpGet("get")]
-        public IActionResult GetAuthor([FromQuery]int authorId)
+        public async Task<IActionResult> GetAuthor([FromQuery]int authorId)
         {
-            var author = _unitOfWork.Author.Get(u => authorId == u.Id);
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            Author author = await _unitOfWork.Author.GetAsync(u => authorId == u.Id);
             if(author == null)
             {
                 return NotFound();
@@ -52,7 +44,7 @@ namespace booknest.Controllers
 
         [Authorize]
         [HttpPut("add")]
-        public IActionResult AddAuthor([FromBody] Author author)
+        public async Task<IActionResult> AddAuthor([FromBody] Author author)
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -61,14 +53,14 @@ namespace booknest.Controllers
                 return BadRequest("author is null");
             
             _unitOfWork.Author.Add(author);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
 
             return Ok(author);
         }
 
         [Authorize]
         [HttpPut("update")]
-        public IActionResult UpdateAuthor([FromBody] Author author)
+        public async Task<IActionResult> UpdateAuthor([FromBody] Author author)
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -77,26 +69,22 @@ namespace booknest.Controllers
                 return BadRequest("author is null");
             
             _unitOfWork.Author.Update(author);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
 
             return Ok(author);
         }
 
         [Authorize]
         [HttpDelete("delete")]
-        public IActionResult DeleteAuthor(int authorId)
+        public async Task<IActionResult> DeleteAuthor(int authorId)
         {
-            Author author = _unitOfWork.Author.Get(u => authorId == u.Id);
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            Author author = await _unitOfWork.Author.GetAsync(u => authorId == u.Id);
             if(author == null)
             {
                 return NotFound();
             }
             _unitOfWork.Author.Remove(author);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
             return Ok(author);
         }
 

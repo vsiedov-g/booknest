@@ -27,7 +27,7 @@ namespace booknest.Service
             {
                 try
                 {
-                    var author = _unitOfWork.Author.Get(p => p.Name == productDto.Author);
+                    var author = await _unitOfWork.Author.GetAsync(p => p.Name == productDto.Author);
                     if (author == null)
                     {
                         throw new ArgumentException($"Author with name {productDto.Author} not found");
@@ -35,7 +35,7 @@ namespace booknest.Service
                     var categories = new List<Category>();
                     foreach(var categoryName in productDto.Categories)
                     {
-                        var category = _unitOfWork.Category.Get(c => c.Name == categoryName);
+                        var category = await _unitOfWork.Category.GetAsync(c => c.Name == categoryName);
                         if (category == null)
                         {
                             throw new ArgumentException($"Category with name {categoryName} not found");
@@ -53,13 +53,13 @@ namespace booknest.Service
                     };
 
                     _unitOfWork.Product.Add(product);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
                     if(imageFile != null)
                     {
-                        string imageUrl = saveProductImage(product.Id, imageFile);
+                        string imageUrl = await saveProductImageAsync(product.Id, imageFile);
                         product.ImageUrl = imageUrl;
                         _unitOfWork.Product.Update(product);
-                        _unitOfWork.Save();
+                        await _unitOfWork.SaveAsync();
                     }
                     await transaction.CommitAsync();
                     return product;
@@ -78,7 +78,7 @@ namespace booknest.Service
             {
                 try
                 {
-                    var product = _unitOfWork.Product.Get(c => c.Id == productDto.Id, includeProperties: "Categories,Author");
+                    var product = await _unitOfWork.Product.GetAsync(c => c.Id == productDto.Id, includeProperties: "Categories,Author");
         
                     if (product == null)
                     {
@@ -89,7 +89,7 @@ namespace booknest.Service
                     product.Description = productDto.Description;
                     product.Price = productDto.Price;
                     
-                    var author = _unitOfWork.Author.Get(p => p.Name == productDto.Author);
+                    var author = await _unitOfWork.Author.GetAsync(p => p.Name == productDto.Author);
                     if (author == null)
                     {
                         throw new ArgumentException($"Author with name {productDto.Author} not found");
@@ -103,7 +103,7 @@ namespace booknest.Service
                     }
                     foreach(var categoryName in productDto.Categories)
                     {
-                        var category = _unitOfWork.Category.Get(c => c.Name == categoryName);
+                        var category = await _unitOfWork.Category.GetAsync(c => c.Name == categoryName);
                         if (category == null)
                         {
                             throw new ArgumentException($"Category with name {categoryName} not found");
@@ -115,14 +115,14 @@ namespace booknest.Service
                     {
                         if(product.ImageUrl != null)
                             deleteProductImage(product.ImageUrl);
-                        string imageUrl = saveProductImage(product.Id, imageFile);
+                        string imageUrl = await saveProductImageAsync(product.Id, imageFile);
                         product.ImageUrl = imageUrl;
                         _unitOfWork.Product.Update(product);
-                        _unitOfWork.Save();
+                        await _unitOfWork.SaveAsync();
                     }
                     
                     _unitOfWork.Product.Update(product);
-                    _unitOfWork.Save();
+                    await _unitOfWork.SaveAsync();
 
                     await transaction.CommitAsync();
                     return product;
@@ -135,7 +135,7 @@ namespace booknest.Service
             }
         }
 
-        public string saveProductImage(int productId, IFormFile imageFile)
+        public async Task<string> saveProductImageAsync(int productId, IFormFile imageFile)
         {
             string wwwRootPath = _webHostEnvironment.WebRootPath;
             string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
@@ -149,8 +149,8 @@ namespace booknest.Service
 
             using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
             {
-                imageFile.CopyTo(fileStream);
-                fileStream.Flush();
+                await imageFile.CopyToAsync(fileStream);
+                await fileStream.FlushAsync();
             }
 
             return @"/" + productPath + @"/" + fileName;
@@ -182,7 +182,7 @@ namespace booknest.Service
             return Path.Combine(_webHostEnvironment.WebRootPath, filePath.TrimStart('/'));
         }
 
-        public string saveProductFile(int productId, IFormFile file)
+        public async Task<string> saveProductFileAsync(int productId, IFormFile file)
         {
             string wwwRootPath = _webHostEnvironment.WebRootPath;
             string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
@@ -196,8 +196,8 @@ namespace booknest.Service
 
             using (var fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
             {
-                file.CopyTo(fileStream);
-                fileStream.Flush();
+                await file.CopyToAsync(fileStream);
+                await fileStream.FlushAsync();
             }
 
             return @"/" + productPath + @"/" + fileName;

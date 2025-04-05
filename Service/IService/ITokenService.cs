@@ -9,8 +9,8 @@ namespace booknest.Service.IService
         public string GenerateToken(User user);
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
         public RefreshToken GenerateRefreshToken(int id);
-        public void SaveRefreshTokenToDB(RefreshToken refreshToken);
-        public bool ValidateRefreshToken(string token, int userId);
-        public void RevokeRefreshToken(int userId);
+        public Task SaveRefreshTokenToDBAsync(RefreshToken refreshToken);
+        public Task<bool> ValidateRefreshTokenAsync(string token, int userId);
+        public Task RevokeRefreshTokenAsync(int userId);
     }
 }

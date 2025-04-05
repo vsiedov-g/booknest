@@ -49,20 +49,17 @@ namespace booknest.Controllers
             };
             var productDto = JsonSerializer.Deserialize<ProductDto>(productDtoWithImage.productDto, options);
 
-            if(productDtoWithImage == null)
-                return BadRequest("PRODUCT_NULL");
-
-            var product = await _productService.AddProductAsync(productDto, productDtoWithImage.imageFile);
+            var product = await _productService.AddProductAsync(productDto!, productDtoWithImage.imageFile);
 
             return Ok(product);
         }
 
         [HttpGet("getAll")]
-        public IActionResult GetAll(int? userId)
+        public async Task<IActionResult> GetAll(int? userId)
         {
             if(userId != null)
             {
-                var user = _unitOfWork.User.Get(u => u.Id == userId, includeProperties: "Products");
+                var user = await _unitOfWork.User.GetAsync(u => u.Id == userId, includeProperties: "Products");
                 if(user == null)
                 {
                     return NotFound("User is not found");
@@ -70,19 +67,15 @@ namespace booknest.Controllers
                 var mappedUserProducts = _mapper.Map<List<ProductDto>>(user.Products);
                 return Ok(mappedUserProducts);
             }
-            var products = _unitOfWork.Product.GetAll(includeProperties: "Categories,Author");
+            var products = await _unitOfWork.Product.GetAllAsync(includeProperties: "Categories,Author");
             var mappedProducts = _mapper.Map<List<ProductDto>>(products);
             return Ok(mappedProducts);
         }
 
         [HttpGet("getById")]
-        public IActionResult Get(int productId)
+        public async Task<IActionResult> Get(int productId)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var product = _unitOfWork.Product.Get(u => productId == u.Id, includeProperties: "Categories,Author");
+            var product = await _unitOfWork.Product.GetAsync(u => productId == u.Id, includeProperties: "Categories,Author");
             if(product == null)
             {
                 return NotFound();
@@ -103,47 +96,36 @@ namespace booknest.Controllers
             }; 
             var productDto = JsonSerializer.Deserialize<ProductDto>(productDtoWithImage.productDto, options);
 
-            if(productDtoWithImage == null)
-                return BadRequest("product is null");
-
-            var product = await _productService.UpdateProductAsync(productDto, productDtoWithImage.imageFile);
+            var product = await _productService.UpdateProductAsync(productDto!, productDtoWithImage.imageFile);
             
             return Ok(_mapper.Map<ProductDto>(product)); 
         }
 
         [Authorize]
         [HttpDelete("delete")]
-        public IActionResult RemoveProduct(int productId)
+        public async Task<IActionResult> RemoveProduct(int productId)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var product = _unitOfWork.Product.Get(u => productId == u.Id);
+            var product = await _unitOfWork.Product.GetAsync(u => productId == u.Id);
             if(product == null)
             {
                 return NotFound();
             }
             _productService.deleteProductImageDirectory(product.Id, product.ImageUrl);
             _unitOfWork.Product.Remove(product);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
             return Ok(product);
         }
 
-        
+        [Authorize]
         [HttpPut("uploadFile")]
-        public IActionResult UploadProductFile(int productId, IFormFile file)
+        public async Task<IActionResult> UploadProductFile(int productId, IFormFile file)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var product = _unitOfWork.Product.Get(p => p.Id == productId);
+            var product = await _unitOfWork.Product.GetAsync(p => p.Id == productId);
             if(product == null)
             {
                 return NotFound();
             }
-            string filePath = _productService.saveProductFile(product.Id, file);
+            string filePath = await _productService.saveProductFileAsync(product.Id, file);
             if(filePath == null)
             {
                 return BadRequest("something went wrong");
@@ -151,18 +133,15 @@ namespace booknest.Controllers
 
             product.FilePath = filePath;
             _unitOfWork.Product.Update(product);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
             return Ok(new {message = product.FilePath});
         }
 
+        [Authorize]
         [HttpGet("downloadFile")]
-        public IActionResult DownloadProductFile(int productId)
+        public async Task<IActionResult> DownloadProductFile(int productId)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var product = _unitOfWork.Product.Get(p => p.Id == productId);
+            var product = await _unitOfWork.Product.GetAsync(p => p.Id == productId);
             if(product == null)
             {
                 return NotFound("Product not found");
@@ -191,12 +170,12 @@ namespace booknest.Controllers
                 return BadRequest(ModelState);
             }
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            User user = _unitOfWork.User.Get(u => u.Id.ToString() == userId, includeProperties: "Products");
+            User user = await _unitOfWork.User.GetAsync(u => u.Id.ToString() == userId, includeProperties: "Products");
             if(user == null)
             {
                 return NotFound("User is not found");
             }
-            Product product = _unitOfWork.Product.Get(p => p.Id == productId);
+            Product product = await _unitOfWork.Product.GetAsync(p => p.Id == productId);
             if(product == null)
             {
                 return NotFound("Product is not found");
@@ -232,7 +211,7 @@ namespace booknest.Controllers
                 };
 
                 _unitOfWork.Order.Add(order);
-                _unitOfWork.Save();
+                await _unitOfWork.SaveAsync();
                 return Ok(new {pageUrl = content.pageUrl});
             }else 
             {
@@ -242,13 +221,13 @@ namespace booknest.Controllers
         }
 
         [HttpPost("callback")]
-        public IActionResult Callback([FromBody] CallbackRequest req)
+        public async Task<IActionResult> Callback([FromBody] CallbackRequest req)
         {
             if(!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var order = _unitOfWork.Order.Get(o => o.InvoiceId == req.InvoiceId, includeProperties: "Product");
+            var order = await _unitOfWork.Order.GetAsync(o => o.InvoiceId == req.InvoiceId, includeProperties: "Product");
             if(order == null)
             {
                 return NotFound();
@@ -258,13 +237,13 @@ namespace booknest.Controllers
                 order.ModifiedDate = req.ModifiedDate;
                 order.Status = req.Status;
                 _unitOfWork.Order.Update(order);
-                _unitOfWork.Save();
+                await _unitOfWork.SaveAsync();
             }
             if(req.Status == "success")
             {
-                var user = _unitOfWork.User.Get(u => u.Id == order.UserId, includeProperties: "Products");
+                var user = await _unitOfWork.User.GetAsync(u => u.Id == order.UserId, includeProperties: "Products");
                 user.Products.Add(order.Product);
-                _unitOfWork.Save();
+                await _unitOfWork.SaveAsync();
             }
             return Ok();
         }

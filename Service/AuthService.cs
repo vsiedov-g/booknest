@@ -42,9 +42,9 @@ namespace booknest.Service
             return CryptographicOperations.FixedTimeEquals(hash, inputHash);
         }
 
-        public User Authenticate(string email, string password)
+        public async Task<User> AuthenticateAsync(string email, string password)
         {
-            var currentUser = _unitOfWork.User.Get(x => x.Email.ToLower() == email.ToLower());
+            var currentUser = await _unitOfWork.User.GetAsync(x => x.Email.ToLower() == email.ToLower());
             if(currentUser == null)
             {
                 return null;
@@ -56,7 +56,7 @@ namespace booknest.Service
             return currentUser;
         }
 
-        public User CreateUser(string email, string password)
+        public async Task<User> CreateUserAsync(string email, string password)
         {
             var user = new User {
                 Email = email,
@@ -64,7 +64,7 @@ namespace booknest.Service
                 Role = SD.Customer_Claim
             };
             _unitOfWork.User.Add(user);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
             return user;
         }
     }

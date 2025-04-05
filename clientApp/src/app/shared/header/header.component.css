@@ -1,0 +1,67 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+}
+
+/* Navbar Brand */
+.navbar-brand a {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+}
+
+/* Navbar Links */
+.navbar-links, .navbar-auth {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.navbar-links a, .navbar-auth a {
+    text-decoration: none;
+    color: black;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+/* Dropdown */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+    padding: 10px;
+    display: none;
+    flex-direction: column;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 5px;
+    text-decoration: none;
+    color: black;
+}
+
+.divider {
+    height: 1px;
+    background: gray;
+    margin: 5px 0;
+}
+
+/* Show dropdown when active */
+.dropdown-menu.show {
+    display: flex;
+}

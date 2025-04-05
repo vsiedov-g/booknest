@@ -8,11 +8,11 @@ namespace booknest.Service.IService
     {
        public Task<Product> AddProductAsync(ProductDto productDto, IFormFile? imageFile); 
        public Task<Product> UpdateProductAsync(ProductDto productDto, IFormFile? imageFile);
-       public string saveProductImage(int productId, IFormFile imageFile);
+       public Task<string> saveProductImageAsync(int productId, IFormFile imageFile);
        public void deleteProductImage(string imageUrl);
        public void deleteProductImageDirectory(int productId, string productImageUrl);
        public string getProductFileDirectory(string filePath);
-       public string saveProductFile(int productId, IFormFile file);
+       public Task<string> saveProductFileAsync(int productId, IFormFile file);
        public void deleteProductFIle(string filePath);
        public void deleteProductFileDirectory(int productId, string filePath);
     }

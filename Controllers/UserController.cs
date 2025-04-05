@@ -23,9 +23,9 @@ namespace booknest.Controllers
 
         [Authorize]
         [HttpGet("getAll")]
-        public IActionResult GetAllUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
-            var users = _mapper.Map<List<UserDto>>(_unitOfWork.User.GetAll());
+            var users = _mapper.Map<List<UserDto>>(await _unitOfWork.User.GetAllAsync());
             if(!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -35,13 +35,9 @@ namespace booknest.Controllers
 
         [Authorize]
         [HttpGet("getById")]
-        public IActionResult GetUser(int userId)
+        public async Task<IActionResult> GetUser(int userId)
         {
-            var user = _unitOfWork.User.Get(u => userId == u.Id);
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var user = await _unitOfWork.User.GetAsync(u => userId == u.Id);
             if(user == null)
             {
                 return NotFound();
@@ -52,15 +48,15 @@ namespace booknest.Controllers
 
         [Authorize]
         [HttpPut("update")]
-        public IActionResult UpdateUser([FromBody] UserDto userDTO)
+        public async Task<IActionResult> UpdateUser([FromBody] UserDto userDTO)
         {
             if(!ModelState.IsValid)
-                return BadRequest("shit");
+                return BadRequest();
 
             if(userDTO == null)
                 return BadRequest("user is null");
 
-            User userFromDb = _unitOfWork.User.Get(i => i.Id == userDTO.Id);
+            User userFromDb = await _unitOfWork.User.GetAsync(i => i.Id == userDTO.Id);
             if(userFromDb == null)
                 return BadRequest("User does not exist!");
             userFromDb.Name = userDTO.Name;
@@ -68,26 +64,22 @@ namespace booknest.Controllers
             userFromDb.Email = userDTO.Email;
             userFromDb.Role = userDTO.Role;
             _unitOfWork.User.Update(userFromDb);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
 
             return Ok(userDTO);
         }
 
         [Authorize]
         [HttpDelete("delete")]
-        public IActionResult RemoveUser(int userId)
+        public async Task<IActionResult> RemoveUser(int userId)
         {
-            var user = _unitOfWork.User.Get(u => userId == u.Id);
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var user = await _unitOfWork.User.GetAsync(u => userId == u.Id);
             if(user == null)
             {
                 return NotFound();
             }
             _unitOfWork.User.Remove(user);
-            _unitOfWork.Save();
+            await _unitOfWork.SaveAsync();
             return Ok(user);
         }
 

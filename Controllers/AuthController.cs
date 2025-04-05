@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using booknest.Models;
 using booknest.Models.DTO;
 using booknest.Repository.IRepository;
@@ -25,18 +26,18 @@ namespace booknest.Controllers
         }
         [AllowAnonymous]
         [HttpPost("signup")]
-        public IActionResult Signup([FromBody] AuthRequestData requestData)
+        public async Task<IActionResult> Signup([FromBody] AuthRequestData requestData)
         {
            if(!ModelState.IsValid)
            {
                 return BadRequest("something went wrong");
            } 
-           var user = _authService.Authenticate(requestData.Email, requestData.Password);
+           var user = await _authService.AuthenticateAsync(requestData.Email, requestData.Password);
            if (user != null)
            {
                 return BadRequest("User already exists");
            }
-            user = _authService.CreateUser(requestData.Email, requestData.Password);
+            user = await _authService.CreateUserAsync(requestData.Email, requestData.Password);
             var token = _tokenService.GenerateToken(user);
             AuthResponseData response = new AuthResponseData(){
                 AccessToken = token,
@@ -45,25 +46,25 @@ namespace booknest.Controllers
                 Role = user.Role
             };
             
-            SetRefreshToken(user.Id);
+            await SetRefreshTokenAsync(user.Id);
 
             return Ok(response);
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult Login([FromBody] AuthRequestData requestData)
+        public async Task<IActionResult> Login([FromBody] AuthRequestData requestData)
         {
             if(!ModelState.IsValid)
            {
                 return BadRequest("something went wrong");
            }
-            var user = _authService.Authenticate(requestData.Email, requestData.Password);
+            var user = await _authService.AuthenticateAsync(requestData.Email, requestData.Password);
             if(user == null)
             {
                 return BadRequest("email or password is invalid");
             }
-            _tokenService.RevokeRefreshToken(user.Id);
+            await _tokenService.RevokeRefreshTokenAsync(user.Id);
             var token = _tokenService.GenerateToken(user);
             AuthResponseData response = new AuthResponseData(){
                 AccessToken = token,
@@ -73,25 +74,25 @@ namespace booknest.Controllers
                 Role = user.Role
             };
 
-            SetRefreshToken(user.Id);
+            await SetRefreshTokenAsync(user.Id);
 
             return Ok(response);
         }
         
         [Authorize]
         [HttpPost("logout")]
-        public IActionResult Logout([FromBody] int userId)
+        public async Task<IActionResult> Logout([FromBody] int userId)
         {
             if(!ModelState.IsValid)
            {
                 return BadRequest("something went wrong");
            }
-            _tokenService.RevokeRefreshToken(userId);
+            await _tokenService.RevokeRefreshTokenAsync(userId);
             return Ok(new {message = userId});
         }
 
         [HttpPost("refresh-token")]
-        public IActionResult RefreshToken([FromForm] string accessToken)
+        public async Task<IActionResult> RefreshToken([FromForm] string accessToken)
         {
             if(!ModelState.IsValid)
             {
@@ -111,14 +112,14 @@ namespace booknest.Controllers
                 return BadRequest("user email is null");
             }
 
-            User user = _unitOfWork.User.Get(u => u.Email == userEmail);
+            User user = await _unitOfWork.User.GetAsync(u => u.Email == userEmail);
 
             if (user == null)
             {
                 return BadRequest("user is null");
             }
 
-            if(!_tokenService.ValidateRefreshToken(refreshToken, user.Id))
+            if(!await _tokenService.ValidateRefreshTokenAsync(refreshToken, user.Id))
             {
                 return BadRequest("REFRESH_TOKEN_EXPIRED");
             }
@@ -128,10 +129,10 @@ namespace booknest.Controllers
         }
 
 
-        private void SetRefreshToken(int userId)
+        private async Task SetRefreshTokenAsync(int userId)
         {
             RefreshToken refreshToken = _tokenService.GenerateRefreshToken(userId);
-            _tokenService.SaveRefreshTokenToDB(refreshToken);
+            await _tokenService.SaveRefreshTokenToDBAsync(refreshToken);
             var cookieOptions = new CookieOptions {
                 Expires = refreshToken.Expires,
             };

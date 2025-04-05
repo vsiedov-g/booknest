@@ -7,8 +7,8 @@ namespace booknest.Service.IService
     {
         string HashPassword(string password);
         bool VerifyPassword(string password, string hashedPasswordr);
-        public User Authenticate(string email, string password);
-        public User CreateUser(string email, string password);
+        public Task<User> AuthenticateAsync(string email, string password);
+        public Task<User> CreateUserAsync(string email, string password);
 
     }
 }

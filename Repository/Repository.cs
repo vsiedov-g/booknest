@@ -21,7 +21,7 @@ namespace booknest.Repository
             dbSet.Add(entity);
         }
 
-        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if(!string.IsNullOrEmpty(includeProperties))
@@ -32,10 +32,10 @@ namespace booknest.Repository
                         query = query.Include(property);
                     }
             }
-            return query.FirstOrDefault(filter);
+            return await query.FirstOrDefaultAsync(filter);
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>> filter = null, string? includeProperties = null)
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter = null, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if (filter != null) {
@@ -50,7 +50,7 @@ namespace booknest.Repository
                     }
             }
             
-            return query.ToList();
+            return await query.ToListAsync();
         }
 
         public void Remove(T entity)
