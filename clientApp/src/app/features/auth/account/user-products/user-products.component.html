@@ -1,1 +1,19 @@
-<p>user-products works!</p>
+<div style="display: flex; flex-wrap: wrap;">
+    @for (product of products; track product)
+    {  
+        <div style="flex: 0 0 calc(20% - 40px); padding: 10px; box-sizing: border-box;;">
+            <mat-card class="product-card">
+                <mat-card-content>
+                    <img mat-card-image class="image" [src]="product.imageUrl || 'assets/img/no-image.jpg'" alt="Product Image" />
+                    <h5>{{ product.title }}</h5>
+                    <p>{{ product.author }}</p>
+                </mat-card-content>
+                <mat-card-actions style="display: flex; justify-content: center;">
+                    <button style="width: 10px;" mat-button (click)="onDownload(product.id)">
+                        <mat-icon>download</mat-icon>
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+    }
+</div>
